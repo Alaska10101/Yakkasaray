@@ -1,0 +1,1208 @@
+﻿<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Интерактивная презентация проекта</title>
+  <style>
+    :root {
+      --bg-1: #0a0a0c;
+      --bg-2: #111216;
+      --bg-3: #1a1510;
+
+      --text: #f6ecdd;
+      --muted: rgba(246, 236, 221, 0.68);
+
+      --gold-1: #b88644;
+      --gold-2: #e3c186;
+      --gold-3: #7b5728;
+
+      --card-border: rgba(227, 193, 134, 0.18);
+      --card-shadow:
+        0 24px 70px rgba(0, 0, 0, 0.44),
+        0 0 0 1px rgba(227, 193, 134, 0.04);
+
+      --glass-border: rgba(227, 193, 134, 0.22);
+
+      --small-fill: rgba(227, 193, 134, 0.12);
+      --medium-fill: rgba(227, 193, 134, 0.17);
+      --large-fill: rgba(255, 223, 170, 0.22);
+      --fitness-fill: rgba(227, 193, 134, 0.15);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: "DengXian", "Microsoft YaHei UI", "Segoe UI", Arial, sans-serif;
+      color: var(--text);
+      background:
+        radial-gradient(circle at 10% 10%, rgba(227,193,134,0.14) 0%, rgba(227,193,134,0) 24%),
+        radial-gradient(circle at 85% 12%, rgba(184,134,68,0.12) 0%, rgba(184,134,68,0) 22%),
+        radial-gradient(circle at 50% 100%, rgba(123,87,40,0.18) 0%, rgba(123,87,40,0) 30%),
+        linear-gradient(135deg, var(--bg-1) 0%, var(--bg-2) 48%, var(--bg-3) 100%);
+      overflow-x: hidden;
+      position: relative;
+    }
+
+    body::before,
+    body::after {
+      content: "";
+      position: fixed;
+      width: 420px;
+      height: 420px;
+      border-radius: 50%;
+      filter: blur(90px);
+      pointer-events: none;
+      opacity: 0.18;
+      z-index: 0;
+    }
+
+    body::before {
+      top: -140px;
+      left: -140px;
+      background: rgba(227, 193, 134, 0.20);
+    }
+
+    body::after {
+      right: -140px;
+      bottom: -140px;
+      background: rgba(184, 134, 68, 0.16);
+    }
+
+    .grain {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 0;
+      opacity: 0.045;
+      background-image: radial-gradient(circle, #ffffff 0.7px, transparent 0.7px);
+      background-size: 8px 8px;
+      mix-blend-mode: soft-light;
+    }
+
+    .page {
+      position: relative;
+      z-index: 1;
+      max-width: 1440px;
+      margin: 0 auto;
+      padding: 28px 24px 60px;
+    }
+
+    .hero {
+      position: relative;
+      overflow: hidden;
+      border-radius: 32px;
+      padding: 34px 32px;
+      margin-bottom: 24px;
+      background: linear-gradient(180deg, rgba(28,23,19,0.88) 0%, rgba(18,16,14,0.84) 100%);
+      border: 1px solid var(--card-border);
+      box-shadow: var(--card-shadow);
+      isolation: isolate;
+      animation: fadeUp 0.7s ease both;
+    }
+
+    .hero::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, rgba(227,193,134,0.10) 0%, rgba(227,193,134,0.02) 32%, rgba(255,255,255,0.01) 60%, rgba(184,134,68,0.05) 100%);
+      z-index: 0;
+      pointer-events: none;
+    }
+
+    .hero::after {
+      content: "";
+      position: absolute;
+      right: -80px;
+      top: -80px;
+      width: 260px;
+      height: 260px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(227,193,134,0.16) 0%, rgba(227,193,134,0) 70%);
+      filter: blur(20px);
+      z-index: 0;
+      pointer-events: none;
+    }
+
+    .hero-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 22px;
+      position: relative;
+      z-index: 1;
+      flex-wrap: wrap;
+    }
+
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 14px;
+      border-radius: 999px;
+      border: 1px solid rgba(227,193,134,0.20);
+      background: rgba(227,193,134,0.07);
+      color: var(--gold-2);
+      font-size: 13px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .hero-badge::before {
+      content: "";
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: linear-gradient(180deg, var(--gold-2), var(--gold-1));
+      box-shadow: 0 0 14px rgba(227,193,134,0.45);
+    }
+
+    .hero-pills {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .pill {
+      padding: 9px 14px;
+      border-radius: 999px;
+      font-size: 12px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: rgba(246,236,221,0.80);
+      border: 1px solid rgba(227,193,134,0.16);
+      background: rgba(255,255,255,0.03);
+    }
+
+    .hero h1 {
+      position: relative;
+      z-index: 1;
+      margin: 0 0 12px;
+      font-size: 40px;
+      line-height: 1.1;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      max-width: 950px;
+    }
+
+    .hero p {
+      position: relative;
+      z-index: 1;
+      margin: 0;
+      max-width: 820px;
+      font-size: 16px;
+      line-height: 1.65;
+      color: var(--muted);
+    }
+
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 18px;
+      margin: 22px 0 26px;
+    }
+
+    .stat-card {
+      position: relative;
+      overflow: hidden;
+      border-radius: 24px;
+      padding: 18px 18px 16px;
+      background: linear-gradient(180deg, rgba(28,24,20,0.84) 0%, rgba(16,14,12,0.86) 100%);
+      border: 1px solid rgba(227,193,134,0.14);
+      box-shadow:
+        inset 0 1px 0 rgba(255,255,255,0.03),
+        0 12px 28px rgba(0,0,0,0.22);
+      animation: fadeUp 0.8s ease both;
+    }
+
+    .stat-card:nth-child(2) { animation-delay: 0.05s; }
+    .stat-card:nth-child(3) { animation-delay: 0.1s; }
+    .stat-card:nth-child(4) { animation-delay: 0.15s; }
+
+    .stat-card::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, rgba(227,193,134,0.06), transparent 55%);
+      pointer-events: none;
+    }
+
+    .stat-label {
+      font-size: 12px;
+      color: var(--muted);
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      margin-bottom: 8px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .stat-value {
+      font-size: 28px;
+      font-weight: 700;
+      color: var(--gold-2);
+      position: relative;
+      z-index: 1;
+      line-height: 1.1;
+    }
+
+    .stat-sub {
+      margin-top: 6px;
+      font-size: 13px;
+      color: rgba(246,236,221,0.72);
+      position: relative;
+      z-index: 1;
+    }
+
+    .legend-panel,
+    .instruction-panel {
+      position: relative;
+      overflow: hidden;
+      border-radius: 24px;
+      padding: 18px 20px;
+      background: linear-gradient(180deg, rgba(25,21,18,0.86) 0%, rgba(17,15,13,0.88) 100%);
+      border: 1px solid rgba(227,193,134,0.14);
+      box-shadow:
+        inset 0 1px 0 rgba(255,255,255,0.03),
+        0 12px 28px rgba(0,0,0,0.22);
+    }
+
+    .legend-panel {
+      margin-bottom: 18px;
+      animation: fadeUp 0.85s ease both;
+    }
+
+    .instruction-panel {
+      margin-bottom: 28px;
+      animation: fadeUp 0.9s ease both;
+    }
+
+    .section-title {
+      margin: 0 0 14px;
+      font-size: 14px;
+      letter-spacing: 0.10em;
+      text-transform: uppercase;
+      color: var(--gold-2);
+    }
+
+    .legend-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 14px 20px;
+    }
+
+    .legend-item {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      color: rgba(246,236,221,0.82);
+      font-size: 14px;
+    }
+
+    .legend-dot {
+      width: 16px;
+      height: 16px;
+      border-radius: 6px;
+      border: 1px solid rgba(227,193,134,0.26);
+      box-shadow: 0 0 12px rgba(227,193,134,0.08);
+    }
+
+    .legend-small { background: var(--small-fill); }
+    .legend-medium { background: var(--medium-fill); }
+    .legend-large { background: var(--large-fill); }
+    .legend-fitness { background: var(--fitness-fill); }
+
+    .instruction-text {
+      margin: 0;
+      font-size: 15px;
+      line-height: 1.7;
+      color: var(--muted);
+    }
+
+    .plans {
+      display: grid;
+      gap: 28px;
+    }
+
+    .plan-card {
+      position: relative;
+      overflow: hidden;
+      border-radius: 30px;
+      background: linear-gradient(180deg, rgba(28,23,19,0.88) 0%, rgba(18,16,14,0.86) 100%);
+      border: 1px solid var(--card-border);
+      box-shadow: var(--card-shadow);
+      transition:
+        transform 0.28s ease,
+        box-shadow 0.28s ease,
+        border-color 0.28s ease;
+      isolation: isolate;
+      animation: fadeUp 0.8s ease both;
+    }
+
+    .plan-card:nth-child(2) { animation-delay: 0.08s; }
+    .plan-card:nth-child(3) { animation-delay: 0.12s; }
+
+    .plan-card::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, rgba(227,193,134,0.08) 0%, rgba(227,193,134,0.02) 30%, rgba(255,255,255,0.01) 60%, rgba(184,134,68,0.05) 100%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .plan-card::after {
+      content: "";
+      position: absolute;
+      left: 50%;
+      bottom: -20px;
+      transform: translateX(-50%);
+      width: 78%;
+      height: 70px;
+      background: radial-gradient(circle, rgba(227,193,134,0.15) 0%, rgba(227,193,134,0) 70%);
+      filter: blur(18px);
+      z-index: 0;
+      pointer-events: none;
+    }
+
+    .plan-card:hover {
+      transform: translateY(-4px);
+      box-shadow:
+        0 30px 82px rgba(0, 0, 0, 0.52),
+        0 0 28px rgba(227,193,134,0.08),
+        0 0 0 1px rgba(227,193,134,0.08);
+    }
+
+    .plan-header {
+      position: relative;
+      z-index: 1;
+      padding: 22px 24px 10px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+      flex-wrap: wrap;
+    }
+
+    .plan-header-left {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .plan-header-left::before {
+      content: "";
+      width: 10px;
+      height: 28px;
+      border-radius: 999px;
+      background: linear-gradient(180deg, var(--gold-2), var(--gold-1));
+      box-shadow:
+        0 0 0 4px rgba(227,193,134,0.08),
+        0 0 16px rgba(227,193,134,0.18);
+      flex: 0 0 auto;
+    }
+
+    .plan-title {
+      margin: 0;
+      font-size: 24px;
+      line-height: 1.1;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      color: var(--text);
+    }
+
+    .plan-tag {
+      padding: 8px 12px;
+      border-radius: 999px;
+      font-size: 12px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--gold-2);
+      background: rgba(227,193,134,0.07);
+      border: 1px solid rgba(227,193,134,0.16);
+    }
+
+    .plan-wrap {
+      position: relative;
+      z-index: 1;
+      width: 100%;
+      padding: 8px 16px 10px;
+    }
+
+    .plan-image {
+      width: 100%;
+      height: auto;
+      display: block;
+      user-select: none;
+      -webkit-user-drag: none;
+      border-radius: 22px;
+      box-shadow:
+        0 16px 32px rgba(0,0,0,0.34),
+        0 0 0 1px rgba(227,193,134,0.08);
+      background: #0f0f11;
+    }
+
+    .overlay {
+      position: absolute;
+      inset: 8px 16px 10px 16px;
+      width: calc(100% - 32px);
+      height: calc(100% - 18px);
+      z-index: 2;
+      border-radius: 22px;
+      pointer-events: none;
+    }
+
+    .room {
+      fill: rgba(255,255,255,0);
+      stroke: rgba(255,255,255,0);
+      stroke-width: 2.4;
+      pointer-events: all;
+      cursor: default;
+      transform-box: fill-box;
+      transform-origin: center;
+      transition:
+        fill 0.25s ease,
+        stroke 0.25s ease,
+        transform 0.25s ease,
+        filter 0.25s ease,
+        opacity 0.25s ease;
+    }
+
+    .room:hover,
+    .room.active {
+      stroke: rgba(227,193,134,0.98);
+      transform: scale(1.01);
+      filter:
+        drop-shadow(0 0 8px rgba(227,193,134,0.20))
+        drop-shadow(0 0 18px rgba(227,193,134,0.12));
+    }
+
+    .room.type-s:hover,
+    .room.type-s.active {
+      fill: var(--small-fill);
+    }
+
+    .room.type-m:hover,
+    .room.type-m.active {
+      fill: var(--medium-fill);
+    }
+
+    .room.type-l:hover,
+    .room.type-l.active {
+      fill: var(--large-fill);
+    }
+
+    .room.type-fitness:hover,
+    .room.type-fitness.active {
+      fill: var(--fitness-fill);
+      stroke: rgba(227,193,134,0.96);
+    }
+
+    .room.active {
+      animation: roomGlow 2.6s ease-in-out infinite;
+    }
+
+    @keyframes roomGlow {
+      0%, 100% {
+        filter:
+          drop-shadow(0 0 8px rgba(227,193,134,0.22))
+          drop-shadow(0 0 18px rgba(227,193,134,0.10));
+      }
+      50% {
+        filter:
+          drop-shadow(0 0 14px rgba(227,193,134,0.34))
+          drop-shadow(0 0 28px rgba(227,193,134,0.18));
+      }
+    }
+
+    .tooltip {
+      position: absolute;
+      transform: translate(-50%, calc(-100% - 20px));
+      min-width: 190px;
+      padding: 13px 15px;
+      border-radius: 18px;
+      border: 1px solid var(--glass-border);
+      background: linear-gradient(180deg, rgba(28,24,20,0.96) 0%, rgba(16,14,12,0.96) 100%);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      box-shadow:
+        0 18px 34px rgba(0,0,0,0.45),
+        0 0 16px rgba(227,193,134,0.10),
+        inset 0 1px 0 rgba(255,255,255,0.04);
+      font-size: 13px;
+      color: rgba(246,236,221,0.82);
+      opacity: 0;
+      visibility: hidden;
+      transition:
+        opacity 0.18s ease,
+        visibility 0.18s ease,
+        transform 0.18s ease;
+      pointer-events: none;
+      white-space: nowrap;
+      z-index: 10;
+    }
+
+    .tooltip.show {
+      opacity: 1;
+      visibility: visible;
+      transform: translate(-50%, calc(-100% - 24px));
+    }
+
+    .tooltip strong {
+      display: block;
+      color: var(--gold-2);
+      font-size: 15px;
+      margin-bottom: 4px;
+      font-weight: 700;
+      letter-spacing: 0.02em;
+    }
+
+    .tooltip::after {
+      content: "";
+      position: absolute;
+      left: 50%;
+      bottom: -7px;
+      width: 12px;
+      height: 12px;
+      transform: translateX(-50%) rotate(45deg);
+      background: rgba(22,19,16,0.96);
+      border-right: 1px solid rgba(227,193,134,0.24);
+      border-bottom: 1px solid rgba(227,193,134,0.24);
+    }
+
+    .selection-bar {
+      position: relative;
+      z-index: 1;
+      margin: 0 16px 16px;
+      padding: 16px 18px;
+      border-radius: 18px;
+      background: linear-gradient(180deg, rgba(24,21,18,0.88) 0%, rgba(16,14,12,0.88) 100%);
+      border: 1px solid rgba(227,193,134,0.14);
+      box-shadow:
+        inset 0 1px 0 rgba(255,255,255,0.03),
+        0 12px 26px rgba(0,0,0,0.22);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+      flex-wrap: wrap;
+    }
+
+    .selection-meta {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      flex-wrap: wrap;
+    }
+
+    .selection-kicker {
+      font-size: 12px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+
+    .selection-main {
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--gold-2);
+    }
+
+    .selection-area {
+      font-size: 15px;
+      color: rgba(246,236,221,0.84);
+    }
+
+    .selection-status {
+      padding: 8px 12px;
+      border-radius: 999px;
+      border: 1px solid rgba(227,193,134,0.16);
+      background: rgba(227,193,134,0.06);
+      color: var(--gold-2);
+      font-size: 12px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .plan-note {
+      position: relative;
+      z-index: 1;
+      padding: 0 24px 22px;
+      font-size: 14px;
+      color: var(--muted);
+      line-height: 1.6;
+    }
+
+    map {
+      display: none;
+    }
+
+    @keyframes fadeUp {
+      from {
+        opacity: 0;
+        transform: translateY(18px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @media (max-width: 1100px) {
+      .stats {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+    }
+
+    @media (max-width: 760px) {
+      .page {
+        padding: 16px 12px 34px;
+      }
+
+      .hero {
+        padding: 24px 18px;
+        border-radius: 24px;
+      }
+
+      .hero h1 {
+        font-size: 28px;
+      }
+
+      .hero p {
+        font-size: 14px;
+      }
+
+      .stats {
+        grid-template-columns: 1fr;
+        gap: 14px;
+      }
+
+      .legend-panel,
+      .instruction-panel {
+        padding: 16px;
+        border-radius: 18px;
+      }
+
+      .plan-card {
+        border-radius: 22px;
+      }
+
+      .plan-header {
+        padding: 18px 16px 10px;
+      }
+
+      .plan-title {
+        font-size: 18px;
+      }
+
+      .plan-wrap {
+        padding: 8px 10px 10px;
+      }
+
+      .overlay {
+        inset: 8px 10px 10px 10px;
+        width: calc(100% - 20px);
+        height: calc(100% - 18px);
+      }
+
+      .selection-bar {
+        margin: 0 10px 12px;
+        padding: 14px;
+      }
+
+      .selection-main {
+        font-size: 17px;
+      }
+
+      .selection-area {
+        font-size: 14px;
+      }
+
+      .plan-note {
+        padding: 0 16px 16px;
+      }
+
+      .tooltip {
+        display: none !important;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="grain"></div>
+
+  <div class="page">
+    <section class="hero">
+      <div class="hero-top">
+        <div class="hero-badge">Интерактивная презентация проекта</div>
+        <div class="hero-pills">
+          <span class="pill">3 этаж</span>
+          <span class="pill">4 этаж</span>
+          <span class="pill">Фитнес-зона</span>
+        </div>
+      </div>
+
+      <h1>Архитектурный проект с интерактивными зонами</h1>
+      <p>
+        Презентация проекта с интерактивными планировками жилых лотов на 3 и 4 этажах,
+        а также с инфраструктурной зоной. Наведите курсор на нужную область, чтобы увидеть площадь.
+      </p>
+
+      <div class="stats">
+        <div class="stat-card">
+          <div class="stat-label">Жилых лотов</div>
+          <div class="stat-value">28</div>
+          <div class="stat-sub">на 3 и 4 этажах</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Этажей в блоке</div>
+          <div class="stat-value">2</div>
+          <div class="stat-sub">третий и четвёртый</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Фитнес-зона</div>
+          <div class="stat-value">2000 м²</div>
+          <div class="stat-sub">инфраструктурная часть проекта</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Стиль</div>
+          <div class="stat-value">Premium</div>
+          <div class="stat-sub">золотая проектная палитра</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="legend-panel">
+      <h2 class="section-title">Легенда</h2>
+      <div class="legend-list">
+        <div class="legend-item">
+          <span class="legend-dot legend-small"></span>
+          <span>Малые площади</span>
+        </div>
+        <div class="legend-item">
+          <span class="legend-dot legend-medium"></span>
+          <span>Средние площади</span>
+        </div>
+        <div class="legend-item">
+          <span class="legend-dot legend-large"></span>
+          <span>Большие площади</span>
+        </div>
+        <div class="legend-item">
+          <span class="legend-dot legend-fitness"></span>
+          <span>Инфраструктура / фитнес-зона</span>
+        </div>
+      </div>
+    </section>
+
+    <section class="instruction-panel">
+      <h2 class="section-title">Как использовать</h2>
+      <p class="instruction-text">
+        Наведите курсор на квартиру или зону проекта. Когда курсор уходит с объекта, линия и подсказка исчезают.
+      </p>
+    </section>
+
+    <section class="plans">
+      <div class="plan-card">
+        <div class="plan-header">
+          <div class="plan-header-left">
+            <h3 class="plan-title">Проект 1 — 3 этаж</h3>
+          </div>
+          <div class="plan-tag">Жилой генплан</div>
+        </div>
+
+        <div class="plan-wrap js-plan" data-mask="mask-3.png" data-legend="20,214,360,764" data-legend-start="1" data-legend-count="14">
+          <img src="yakkasaroy3.png" class="plan-image js-plan-image" alt="План 3 этажа">
+          <canvas class="overlay js-plan-canvas"></canvas>
+          <div class="tooltip js-tooltip"></div>
+
+          <script type="application/json" class="js-room-data">
+          [
+    {"id":1,"label":"Квартира 1","title":"44.1 м²"},
+    {"id":2,"label":"Квартира 2","title":"58.3 м²"},
+    {"id":3,"label":"Квартира 3","title":"48.9 м²"},
+    {"id":4,"label":"Квартира 4","title":"49.7 м²"},
+    {"id":5,"label":"Квартира 5","title":"46.6 м²"},
+    {"id":6,"label":"Квартира 6","title":"52.3 м²"},
+    {"id":7,"label":"Квартира 7","title":"58.4 м²"},
+    {"id":8,"label":"Квартира 8","title":"57.6 м²"},
+    {"id":9,"label":"Квартира 9","title":"58.2 м²"},
+    {"id":10,"label":"Квартира 10","title":"57.5 м²"},
+    {"id":11,"label":"Квартира 11","title":"57.5 м²"},
+    {"id":12,"label":"Квартира 12","title":"58.2 м²"},
+    {"id":13,"label":"Квартира 13","title":"54.7 м²"},
+    {"id":14,"label":"Квартира 14","title":"54.4 м²"}
+          ]
+          </script>
+        </div>
+
+        <div class="selection-bar js-selection-bar">
+          <div class="selection-meta">
+            <div>
+              <div class="selection-kicker">Выбрано</div>
+              <div class="selection-main js-selection-label">Квартира 1</div>
+            </div>
+            <div class="selection-area js-selection-area">Площадь: 44.1 м²</div>
+          </div>
+          <div class="selection-status">3 этаж</div>
+        </div>
+
+        <div class="plan-note">
+          Жилой блок третьего этажа с интерактивными зонами на основном плане и в боковой экспликации.
+        </div>
+      </div>
+
+      <div class="plan-card">
+        <div class="plan-header">
+          <div class="plan-header-left">
+            <h3 class="plan-title">Проект 2 — 4 этаж</h3>
+          </div>
+          <div class="plan-tag">Продолжение жилого генплана</div>
+        </div>
+
+        <div class="plan-wrap js-plan" data-mask="mask-4.png" data-legend="20,214,360,764" data-legend-start="15" data-legend-count="14">
+          <img src="yakkasaroy4.png" class="plan-image js-plan-image" alt="План 4 этажа">
+          <canvas class="overlay js-plan-canvas"></canvas>
+          <div class="tooltip js-tooltip"></div>
+
+          <script type="application/json" class="js-room-data">
+          [
+    {"id":15,"label":"Квартира 15","title":"44.1 м²"},
+    {"id":16,"label":"Квартира 16","title":"58.3 м²"},
+    {"id":17,"label":"Квартира 17","title":"48.9 м²"},
+    {"id":18,"label":"Квартира 18","title":"49.7 м²"},
+    {"id":19,"label":"Квартира 19","title":"46.6 м²"},
+    {"id":20,"label":"Квартира 20","title":"52.3 м²"},
+    {"id":21,"label":"Квартира 21","title":"58.4 м²"},
+    {"id":22,"label":"Квартира 22","title":"57.6 м²"},
+    {"id":23,"label":"Квартира 23","title":"58.2 м²"},
+    {"id":24,"label":"Квартира 24","title":"57.5 м²"},
+    {"id":25,"label":"Квартира 25","title":"57.5 м²"},
+    {"id":26,"label":"Квартира 26","title":"58.2 м²"},
+    {"id":27,"label":"Квартира 27","title":"54.7 м²"},
+    {"id":28,"label":"Квартира 28","title":"54.4 м²"}
+          ]
+          </script>
+        </div>
+
+        <div class="selection-bar js-selection-bar">
+          <div class="selection-meta">
+            <div>
+              <div class="selection-kicker">Выбрано</div>
+              <div class="selection-main js-selection-label">Квартира 15</div>
+            </div>
+            <div class="selection-area js-selection-area">Площадь: 44.1 м²</div>
+          </div>
+          <div class="selection-status">4 этаж</div>
+        </div>
+
+        <div class="plan-note">
+          Продолжение жилого блока на четвёртом этаже. Структура и интерактивная логика сохранены.
+        </div>
+      </div>
+
+      <div class="plan-card">
+        <div class="plan-header">
+          <div class="plan-header-left">
+            <h3 class="plan-title">Проект 3 — фитнес-зона</h3>
+          </div>
+          <div class="plan-tag">Инфраструктура проекта</div>
+        </div>
+
+        <div class="plan-wrap js-plan" data-mask="mask-fitness.png">
+          <img src="fitness-area.png" class="plan-image js-plan-image" alt="Фитнес-зона">
+          <canvas class="overlay js-plan-canvas"></canvas>
+          <div class="tooltip js-tooltip"></div>
+
+          <script type="application/json" class="js-room-data">
+          [
+    {"id":1,"label":"Фитнес-центр","title":"2000 м²","type":"fitness"}
+          ]
+          </script>
+        </div>
+
+        <div class="selection-bar js-selection-bar">
+          <div class="selection-meta">
+            <div>
+              <div class="selection-kicker">Выбрано</div>
+              <div class="selection-main js-selection-label">Фитнес-центр</div>
+            </div>
+            <div class="selection-area js-selection-area">Площадь: 2000 м²</div>
+          </div>
+          <div class="selection-status">Инфраструктурная зона</div>
+        </div>
+
+        <div class="plan-note">
+          Инфраструктурная зона проекта. При уходе курсора с зоны подсветка и линия полностью исчезают.
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <script>
+    // Pixel-accurate room hit-testing: each plan has a companion mask PNG where
+    // every room's pixels encode (roomId * 8) in the red channel. This avoids
+    // hand-drawn polygon coordinates entirely — highlighting is traced live from
+    // the real mask boundary, so it always matches the room's actual color exactly.
+
+    function getTypeClass(areaValue, customType) {
+      if (customType === "fitness") return "type-fitness";
+      if (areaValue < 50) return "type-s";
+      if (areaValue < 58) return "type-m";
+      return "type-l";
+    }
+
+    const FILL_COLORS = {
+      "type-s": [227, 193, 134, 0.16],
+      "type-m": [227, 193, 134, 0.20],
+      "type-l": [255, 223, 170, 0.26],
+      "type-fitness": [227, 193, 134, 0.20]
+    };
+    const EDGE_COLOR = [239, 205, 145, 0.95];
+
+    function initPlan(planWrap) {
+      const planImage = planWrap.querySelector(".js-plan-image");
+      const canvas = planWrap.querySelector(".js-plan-canvas");
+      const tooltip = planWrap.querySelector(".js-tooltip");
+      const dataScript = planWrap.querySelector(".js-room-data");
+      const rooms = JSON.parse(dataScript.textContent);
+      const roomsById = new Map(rooms.map(r => [r.id, r]));
+
+      const legendAttr = planWrap.dataset.legend;
+      const legendBox = legendAttr ? legendAttr.split(",").map(Number) : null;
+      const legendStart = +planWrap.dataset.legendStart || 1;
+      const legendCount = +planWrap.dataset.legendCount || 0;
+
+      const selectionBar = planWrap.parentElement.querySelector(".js-selection-bar");
+      const selectionLabel = selectionBar.querySelector(".js-selection-label");
+      const selectionArea = selectionBar.querySelector(".js-selection-area");
+
+      const ctx = canvas.getContext("2d");
+      let maskData = null; // ImageData of the mask
+      let W = 0, H = 0;
+      let bboxById = new Map(); // id -> [x0,y0,x1,y1] for fast edge tracing
+      let hoverId = 0;
+      let selId = 0;
+
+      function idAt(px, py) {
+        if (!maskData || px < 0 || py < 0 || px >= W || py >= H) return 0;
+        const r = maskData.data[(py * W + px) * 4];
+        return Math.round(r / 8);
+      }
+
+      function computeBBoxes() {
+        bboxById.clear();
+        const d = maskData.data;
+        for (let y = 0; y < H; y++) {
+          for (let x = 0; x < W; x++) {
+            const id = Math.round(d[(y * W + x) * 4] / 8);
+            if (!id) continue;
+            let bb = bboxById.get(id);
+            if (!bb) { bb = [x, y, x, y]; bboxById.set(id, bb); }
+            else {
+              if (x < bb[0]) bb[0] = x;
+              if (y < bb[1]) bb[1] = y;
+              if (x > bb[2]) bb[2] = x;
+              if (y > bb[3]) bb[3] = y;
+            }
+          }
+        }
+      }
+
+      function typeClassFor(room) {
+        const areaValue = parseFloat(String(room.title || "").replace(",", ".")) || 0;
+        return getTypeClass(areaValue, room.type || "");
+      }
+
+      function paintPlan() {
+        ctx.clearRect(0, 0, W, H);
+        if (!maskData) return;
+        const d = maskData.data;
+        const out = ctx.createImageData(W, H);
+        const o = out.data;
+
+        const paint = {};
+        if (selId) {
+          const r = roomsById.get(selId);
+          if (r) paint[selId] = FILL_COLORS[typeClassFor(r)] || FILL_COLORS["type-m"];
+        }
+        if (hoverId && hoverId !== selId) {
+          const r = roomsById.get(hoverId);
+          if (r) paint[hoverId] = FILL_COLORS[typeClassFor(r)] || FILL_COLORS["type-m"];
+        }
+
+        if (Object.keys(paint).length) {
+          for (let i = 0, p = 0; i < d.length; i += 4, p += 4) {
+            const id = Math.round(d[i] / 8);
+            const c = paint[id];
+            if (c) {
+              o[p] = c[0]; o[p + 1] = c[1]; o[p + 2] = c[2]; o[p + 3] = Math.round(c[3] * 255);
+            }
+          }
+        }
+
+        if (hoverId) paintEdge(o, d, hoverId, hoverId === selId ? 2 : 1);
+        else if (selId) paintEdge(o, d, selId, 2);
+
+        ctx.putImageData(out, 0, 0);
+      }
+
+      function paintEdge(o, d, id, thick) {
+        const bb = bboxById.get(id);
+        if (!bb) return;
+        const x0 = Math.max(0, bb[0] - thick - 1), x1 = Math.min(W - 1, bb[2] + thick + 1);
+        const y0 = Math.max(0, bb[1] - thick - 1), y1 = Math.min(H - 1, bb[3] + thick + 1);
+        const c = EDGE_COLOR;
+        const a = Math.round(c[3] * 255);
+        for (let y = y0; y <= y1; y++) {
+          for (let x = x0; x <= x1; x++) {
+            if (Math.round(d[(y * W + x) * 4] / 8) !== id) continue;
+            let edge = false;
+            for (let dy = -1; dy <= 1 && !edge; dy++) {
+              for (let dx = -1; dx <= 1 && !edge; dx++) {
+                if (!dx && !dy) continue;
+                const nx = x + dx, ny = y + dy;
+                if (nx < 0 || ny < 0 || nx >= W || ny >= H || Math.round(d[(ny * W + nx) * 4] / 8) !== id) edge = true;
+              }
+            }
+            if (!edge) continue;
+            for (let by = -thick; by <= thick; by++) {
+              for (let bx = -thick; bx <= thick; bx++) {
+                const px = x + bx, py = y + by;
+                if (px < 0 || py < 0 || px >= W || py >= H) continue;
+                const op = (py * W + px) * 4;
+                o[op] = c[0]; o[op + 1] = c[1]; o[op + 2] = c[2]; o[op + 3] = a;
+              }
+            }
+          }
+        }
+      }
+
+      function showTooltip(room, clientX, clientY) {
+        if (window.innerWidth <= 760) return;
+        const rect = planWrap.getBoundingClientRect();
+        const bb = bboxById.get(room.id);
+        const cx = bb ? (bb[0] + bb[2]) / 2 : W / 2;
+        const cy = bb ? (bb[1] + bb[3]) / 2 : H / 2;
+        const x = (cx / W) * rect.width;
+        const y = (cy / H) * rect.height - 18;
+
+        tooltip.innerHTML = `<strong>${room.label}</strong>Площадь: ${room.title}`;
+        tooltip.style.left = x + "px";
+        tooltip.style.top = y + "px";
+        tooltip.classList.add("show");
+      }
+
+      function hideTooltip() {
+        tooltip.classList.remove("show");
+      }
+
+      function updateSelection(room) {
+        selectionLabel.textContent = room.label;
+        selectionArea.textContent = `Площадь: ${room.title}`;
+      }
+
+      function activateByRoom(id, showTip, clientX, clientY) {
+        const room = roomsById.get(id);
+        if (!room) return;
+        hoverId = id;
+        updateSelection(room);
+        if (showTip) showTooltip(room, clientX, clientY);
+        else hideTooltip();
+        paintPlan();
+      }
+
+      function deactivateAll() {
+        hoverId = 0;
+        hideTooltip();
+        paintPlan();
+      }
+
+      function legendRoomAt(px, py) {
+        if (!legendBox) return 0;
+        const [lx0, ly0, lx1, ly1] = legendBox;
+        if (px < lx0 || px > lx1 || py < ly0 || py > ly1) return 0;
+        const rowH = (ly1 - ly0) / legendCount;
+        const row = Math.floor((py - ly0) / rowH);
+        if (row < 0 || row >= legendCount) return 0;
+        return legendStart + row;
+      }
+
+      function localPoint(clientX, clientY) {
+        const rect = planImage.getBoundingClientRect();
+        const px = Math.floor((clientX - rect.left) / rect.width * W);
+        const py = Math.floor((clientY - rect.top) / rect.height * H);
+        return [px, py];
+      }
+
+      function handleMove(clientX, clientY, showTip) {
+        const [px, py] = localPoint(clientX, clientY);
+        let id = legendRoomAt(px, py);
+        if (!id) id = idAt(px, py);
+        if (id) {
+          if (id !== hoverId) activateByRoom(id, showTip, clientX, clientY);
+          else if (showTip) {
+            const room = roomsById.get(id);
+            if (room) showTooltip(room, clientX, clientY);
+          }
+        } else if (hoverId) {
+          deactivateAll();
+        }
+      }
+
+      function loadMask() {
+        const m = new Image();
+        m.onload = () => {
+          W = planImage.naturalWidth || m.naturalWidth;
+          H = planImage.naturalHeight || m.naturalHeight;
+          canvas.width = W;
+          canvas.height = H;
+          const off = document.createElement("canvas");
+          off.width = W; off.height = H;
+          const octx = off.getContext("2d", { willReadFrequently: true });
+          octx.drawImage(m, 0, 0, W, H);
+          maskData = octx.getImageData(0, 0, W, H);
+          computeBBoxes();
+          const first = rooms[0];
+          if (first) updateSelection(first);
+          paintPlan();
+        };
+        m.src = planWrap.dataset.mask;
+      }
+
+      if (planImage.complete && planImage.naturalWidth) {
+        loadMask();
+      } else {
+        planImage.onload = loadMask;
+      }
+
+      planWrap.addEventListener("mousemove", (e) => handleMove(e.clientX, e.clientY, true));
+      planWrap.addEventListener("click", (e) => handleMove(e.clientX, e.clientY, true));
+      planWrap.addEventListener("touchstart", (e) => {
+        const t = e.touches[0];
+        if (t) { e.preventDefault(); handleMove(t.clientX, t.clientY, false); }
+      }, { passive: false });
+      planWrap.addEventListener("mouseleave", deactivateAll);
+
+      window.addEventListener("resize", () => {
+        if (hoverId && tooltip.classList.contains("show") && window.innerWidth > 760) {
+          const room = roomsById.get(hoverId);
+          if (room) showTooltip(room);
+        } else {
+          hideTooltip();
+        }
+      });
+    }
+
+    document.querySelectorAll(".js-plan").forEach(initPlan);
+  </script>
+</body>
+</html>
