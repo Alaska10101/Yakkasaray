@@ -1,0 +1,1200 @@
+﻿<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Интерактивная презентация проекта</title>
+  <style>
+    :root {
+      --bg-1: #0a0a0c;
+      --bg-2: #111216;
+      --bg-3: #1a1510;
+
+      --text: #f6ecdd;
+      --muted: rgba(246, 236, 221, 0.68);
+
+      --gold-1: #b88644;
+      --gold-2: #e3c186;
+      --gold-3: #7b5728;
+
+      --card-border: rgba(227, 193, 134, 0.18);
+      --card-shadow:
+        0 24px 70px rgba(0, 0, 0, 0.44),
+        0 0 0 1px rgba(227, 193, 134, 0.04);
+
+      --glass-border: rgba(227, 193, 134, 0.22);
+
+      --small-fill: rgba(227, 193, 134, 0.12);
+      --medium-fill: rgba(227, 193, 134, 0.17);
+      --large-fill: rgba(255, 223, 170, 0.22);
+      --fitness-fill: rgba(227, 193, 134, 0.15);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: "DengXian", "Microsoft YaHei UI", "Segoe UI", Arial, sans-serif;
+      color: var(--text);
+      background:
+        radial-gradient(circle at 10% 10%, rgba(227,193,134,0.14) 0%, rgba(227,193,134,0) 24%),
+        radial-gradient(circle at 85% 12%, rgba(184,134,68,0.12) 0%, rgba(184,134,68,0) 22%),
+        radial-gradient(circle at 50% 100%, rgba(123,87,40,0.18) 0%, rgba(123,87,40,0) 30%),
+        linear-gradient(135deg, var(--bg-1) 0%, var(--bg-2) 48%, var(--bg-3) 100%);
+      overflow-x: hidden;
+      position: relative;
+    }
+
+    body::before,
+    body::after {
+      content: "";
+      position: fixed;
+      width: 420px;
+      height: 420px;
+      border-radius: 50%;
+      filter: blur(90px);
+      pointer-events: none;
+      opacity: 0.18;
+      z-index: 0;
+    }
+
+    body::before {
+      top: -140px;
+      left: -140px;
+      background: rgba(227, 193, 134, 0.20);
+    }
+
+    body::after {
+      right: -140px;
+      bottom: -140px;
+      background: rgba(184, 134, 68, 0.16);
+    }
+
+    .grain {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 0;
+      opacity: 0.045;
+      background-image: radial-gradient(circle, #ffffff 0.7px, transparent 0.7px);
+      background-size: 8px 8px;
+      mix-blend-mode: soft-light;
+    }
+
+    .page {
+      position: relative;
+      z-index: 1;
+      max-width: 1440px;
+      margin: 0 auto;
+      padding: 28px 24px 60px;
+    }
+
+    .hero {
+      position: relative;
+      overflow: hidden;
+      border-radius: 32px;
+      padding: 34px 32px;
+      margin-bottom: 24px;
+      background: linear-gradient(180deg, rgba(28,23,19,0.88) 0%, rgba(18,16,14,0.84) 100%);
+      border: 1px solid var(--card-border);
+      box-shadow: var(--card-shadow);
+      isolation: isolate;
+      animation: fadeUp 0.7s ease both;
+    }
+
+    .hero::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, rgba(227,193,134,0.10) 0%, rgba(227,193,134,0.02) 32%, rgba(255,255,255,0.01) 60%, rgba(184,134,68,0.05) 100%);
+      z-index: 0;
+      pointer-events: none;
+    }
+
+    .hero::after {
+      content: "";
+      position: absolute;
+      right: -80px;
+      top: -80px;
+      width: 260px;
+      height: 260px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(227,193,134,0.16) 0%, rgba(227,193,134,0) 70%);
+      filter: blur(20px);
+      z-index: 0;
+      pointer-events: none;
+    }
+
+    .hero-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 22px;
+      position: relative;
+      z-index: 1;
+      flex-wrap: wrap;
+    }
+
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 14px;
+      border-radius: 999px;
+      border: 1px solid rgba(227,193,134,0.20);
+      background: rgba(227,193,134,0.07);
+      color: var(--gold-2);
+      font-size: 13px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .hero-badge::before {
+      content: "";
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: linear-gradient(180deg, var(--gold-2), var(--gold-1));
+      box-shadow: 0 0 14px rgba(227,193,134,0.45);
+    }
+
+    .hero-pills {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .pill {
+      padding: 9px 14px;
+      border-radius: 999px;
+      font-size: 12px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: rgba(246,236,221,0.80);
+      border: 1px solid rgba(227,193,134,0.16);
+      background: rgba(255,255,255,0.03);
+    }
+
+    .hero h1 {
+      position: relative;
+      z-index: 1;
+      margin: 0 0 12px;
+      font-size: 40px;
+      line-height: 1.1;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      max-width: 950px;
+    }
+
+    .hero p {
+      position: relative;
+      z-index: 1;
+      margin: 0;
+      max-width: 820px;
+      font-size: 16px;
+      line-height: 1.65;
+      color: var(--muted);
+    }
+
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 18px;
+      margin: 22px 0 26px;
+    }
+
+    .stat-card {
+      position: relative;
+      overflow: hidden;
+      border-radius: 24px;
+      padding: 18px 18px 16px;
+      background: linear-gradient(180deg, rgba(28,24,20,0.84) 0%, rgba(16,14,12,0.86) 100%);
+      border: 1px solid rgba(227,193,134,0.14);
+      box-shadow:
+        inset 0 1px 0 rgba(255,255,255,0.03),
+        0 12px 28px rgba(0,0,0,0.22);
+      animation: fadeUp 0.8s ease both;
+    }
+
+    .stat-card:nth-child(2) { animation-delay: 0.05s; }
+    .stat-card:nth-child(3) { animation-delay: 0.1s; }
+    .stat-card:nth-child(4) { animation-delay: 0.15s; }
+
+    .stat-card::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, rgba(227,193,134,0.06), transparent 55%);
+      pointer-events: none;
+    }
+
+    .stat-label {
+      font-size: 12px;
+      color: var(--muted);
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      margin-bottom: 8px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .stat-value {
+      font-size: 28px;
+      font-weight: 700;
+      color: var(--gold-2);
+      position: relative;
+      z-index: 1;
+      line-height: 1.1;
+    }
+
+    .stat-sub {
+      margin-top: 6px;
+      font-size: 13px;
+      color: rgba(246,236,221,0.72);
+      position: relative;
+      z-index: 1;
+    }
+
+    .legend-panel,
+    .instruction-panel {
+      position: relative;
+      overflow: hidden;
+      border-radius: 24px;
+      padding: 18px 20px;
+      background: linear-gradient(180deg, rgba(25,21,18,0.86) 0%, rgba(17,15,13,0.88) 100%);
+      border: 1px solid rgba(227,193,134,0.14);
+      box-shadow:
+        inset 0 1px 0 rgba(255,255,255,0.03),
+        0 12px 28px rgba(0,0,0,0.22);
+    }
+
+    .legend-panel {
+      margin-bottom: 18px;
+      animation: fadeUp 0.85s ease both;
+    }
+
+    .instruction-panel {
+      margin-bottom: 28px;
+      animation: fadeUp 0.9s ease both;
+    }
+
+    .section-title {
+      margin: 0 0 14px;
+      font-size: 14px;
+      letter-spacing: 0.10em;
+      text-transform: uppercase;
+      color: var(--gold-2);
+    }
+
+    .legend-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 14px 20px;
+    }
+
+    .legend-item {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      color: rgba(246,236,221,0.82);
+      font-size: 14px;
+    }
+
+    .legend-dot {
+      width: 16px;
+      height: 16px;
+      border-radius: 6px;
+      border: 1px solid rgba(227,193,134,0.26);
+      box-shadow: 0 0 12px rgba(227,193,134,0.08);
+    }
+
+    .legend-small { background: var(--small-fill); }
+    .legend-medium { background: var(--medium-fill); }
+    .legend-large { background: var(--large-fill); }
+    .legend-fitness { background: var(--fitness-fill); }
+
+    .instruction-text {
+      margin: 0;
+      font-size: 15px;
+      line-height: 1.7;
+      color: var(--muted);
+    }
+
+    .plans {
+      display: grid;
+      gap: 28px;
+    }
+
+    .plan-card {
+      position: relative;
+      overflow: hidden;
+      border-radius: 30px;
+      background: linear-gradient(180deg, rgba(28,23,19,0.88) 0%, rgba(18,16,14,0.86) 100%);
+      border: 1px solid var(--card-border);
+      box-shadow: var(--card-shadow);
+      transition:
+        transform 0.28s ease,
+        box-shadow 0.28s ease,
+        border-color 0.28s ease;
+      isolation: isolate;
+      animation: fadeUp 0.8s ease both;
+    }
+
+    .plan-card:nth-child(2) { animation-delay: 0.08s; }
+    .plan-card:nth-child(3) { animation-delay: 0.12s; }
+
+    .plan-card::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, rgba(227,193,134,0.08) 0%, rgba(227,193,134,0.02) 30%, rgba(255,255,255,0.01) 60%, rgba(184,134,68,0.05) 100%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .plan-card::after {
+      content: "";
+      position: absolute;
+      left: 50%;
+      bottom: -20px;
+      transform: translateX(-50%);
+      width: 78%;
+      height: 70px;
+      background: radial-gradient(circle, rgba(227,193,134,0.15) 0%, rgba(227,193,134,0) 70%);
+      filter: blur(18px);
+      z-index: 0;
+      pointer-events: none;
+    }
+
+    .plan-card:hover {
+      transform: translateY(-4px);
+      box-shadow:
+        0 30px 82px rgba(0, 0, 0, 0.52),
+        0 0 28px rgba(227,193,134,0.08),
+        0 0 0 1px rgba(227,193,134,0.08);
+    }
+
+    .plan-header {
+      position: relative;
+      z-index: 1;
+      padding: 22px 24px 10px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+      flex-wrap: wrap;
+    }
+
+    .plan-header-left {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .plan-header-left::before {
+      content: "";
+      width: 10px;
+      height: 28px;
+      border-radius: 999px;
+      background: linear-gradient(180deg, var(--gold-2), var(--gold-1));
+      box-shadow:
+        0 0 0 4px rgba(227,193,134,0.08),
+        0 0 16px rgba(227,193,134,0.18);
+      flex: 0 0 auto;
+    }
+
+    .plan-title {
+      margin: 0;
+      font-size: 24px;
+      line-height: 1.1;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      color: var(--text);
+    }
+
+    .plan-tag {
+      padding: 8px 12px;
+      border-radius: 999px;
+      font-size: 12px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--gold-2);
+      background: rgba(227,193,134,0.07);
+      border: 1px solid rgba(227,193,134,0.16);
+    }
+
+    .plan-wrap {
+      position: relative;
+      z-index: 1;
+      width: 100%;
+      padding: 8px 16px 10px;
+    }
+
+    .plan-image {
+      width: 100%;
+      height: auto;
+      display: block;
+      user-select: none;
+      -webkit-user-drag: none;
+      border-radius: 22px;
+      box-shadow:
+        0 16px 32px rgba(0,0,0,0.34),
+        0 0 0 1px rgba(227,193,134,0.08);
+      background: #0f0f11;
+    }
+
+    .overlay {
+      position: absolute;
+      inset: 8px 16px 10px 16px;
+      width: calc(100% - 32px);
+      height: calc(100% - 18px);
+      z-index: 2;
+      border-radius: 22px;
+      pointer-events: none;
+    }
+
+    .room {
+      fill: rgba(255,255,255,0);
+      stroke: rgba(255,255,255,0);
+      stroke-width: 2.4;
+      pointer-events: all;
+      cursor: default;
+      transform-box: fill-box;
+      transform-origin: center;
+      transition:
+        fill 0.25s ease,
+        stroke 0.25s ease,
+        transform 0.25s ease,
+        filter 0.25s ease,
+        opacity 0.25s ease;
+    }
+
+    .room:hover,
+    .room.active {
+      stroke: rgba(227,193,134,0.98);
+      transform: none;
+      filter:
+        drop-shadow(0 0 8px rgba(227,193,134,0.20))
+        drop-shadow(0 0 18px rgba(227,193,134,0.12));
+    }
+
+    .room.type-s:hover,
+    .room.type-s.active {
+      fill: var(--small-fill);
+    }
+
+    .room.type-m:hover,
+    .room.type-m.active {
+      fill: var(--medium-fill);
+    }
+
+    .room.type-l:hover,
+    .room.type-l.active {
+      fill: var(--large-fill);
+    }
+
+    .room.type-fitness:hover,
+    .room.type-fitness.active {
+      fill: var(--fitness-fill);
+      stroke: rgba(227,193,134,0.96);
+    }
+
+    .room.active {
+      animation: roomGlow 2.6s ease-in-out infinite;
+    }
+
+    @keyframes roomGlow {
+      0%, 100% {
+        filter:
+          drop-shadow(0 0 8px rgba(227,193,134,0.22))
+          drop-shadow(0 0 18px rgba(227,193,134,0.10));
+      }
+      50% {
+        filter:
+          drop-shadow(0 0 14px rgba(227,193,134,0.34))
+          drop-shadow(0 0 28px rgba(227,193,134,0.18));
+      }
+    }
+
+    .tooltip {
+      position: absolute;
+      transform: translate(-50%, calc(-100% - 20px));
+      min-width: 190px;
+      padding: 13px 15px;
+      border-radius: 18px;
+      border: 1px solid var(--glass-border);
+      background: linear-gradient(180deg, rgba(28,24,20,0.96) 0%, rgba(16,14,12,0.96) 100%);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      box-shadow:
+        0 18px 34px rgba(0,0,0,0.45),
+        0 0 16px rgba(227,193,134,0.10),
+        inset 0 1px 0 rgba(255,255,255,0.04);
+      font-size: 13px;
+      color: rgba(246,236,221,0.82);
+      opacity: 0;
+      visibility: hidden;
+      transition:
+        opacity 0.18s ease,
+        visibility 0.18s ease,
+        transform 0.18s ease;
+      pointer-events: none;
+      white-space: nowrap;
+      z-index: 10;
+    }
+
+    .tooltip.show {
+      opacity: 1;
+      visibility: visible;
+      transform: translate(-50%, calc(-100% - 24px));
+    }
+
+    .tooltip strong {
+      display: block;
+      color: var(--gold-2);
+      font-size: 15px;
+      margin-bottom: 4px;
+      font-weight: 700;
+      letter-spacing: 0.02em;
+    }
+
+    .tooltip::after {
+      content: "";
+      position: absolute;
+      left: 50%;
+      bottom: -7px;
+      width: 12px;
+      height: 12px;
+      transform: translateX(-50%) rotate(45deg);
+      background: rgba(22,19,16,0.96);
+      border-right: 1px solid rgba(227,193,134,0.24);
+      border-bottom: 1px solid rgba(227,193,134,0.24);
+    }
+
+    .selection-bar {
+      position: relative;
+      z-index: 1;
+      margin: 0 16px 16px;
+      padding: 16px 18px;
+      border-radius: 18px;
+      background: linear-gradient(180deg, rgba(24,21,18,0.88) 0%, rgba(16,14,12,0.88) 100%);
+      border: 1px solid rgba(227,193,134,0.14);
+      box-shadow:
+        inset 0 1px 0 rgba(255,255,255,0.03),
+        0 12px 26px rgba(0,0,0,0.22);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+      flex-wrap: wrap;
+    }
+
+    .selection-meta {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      flex-wrap: wrap;
+    }
+
+    .selection-kicker {
+      font-size: 12px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+
+    .selection-main {
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--gold-2);
+    }
+
+    .selection-area {
+      font-size: 15px;
+      color: rgba(246,236,221,0.84);
+    }
+
+    .selection-status {
+      padding: 8px 12px;
+      border-radius: 999px;
+      border: 1px solid rgba(227,193,134,0.16);
+      background: rgba(227,193,134,0.06);
+      color: var(--gold-2);
+      font-size: 12px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .plan-note {
+      position: relative;
+      z-index: 1;
+      padding: 0 24px 22px;
+      font-size: 14px;
+      color: var(--muted);
+      line-height: 1.6;
+    }
+
+    map {
+      display: none;
+    }
+
+    @keyframes fadeUp {
+      from {
+        opacity: 0;
+        transform: translateY(18px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @media (max-width: 1100px) {
+      .stats {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+    }
+
+    @media (max-width: 760px) {
+      .page {
+        padding: 16px 12px 34px;
+      }
+
+      .hero {
+        padding: 24px 18px;
+        border-radius: 24px;
+      }
+
+      .hero h1 {
+        font-size: 28px;
+      }
+
+      .hero p {
+        font-size: 14px;
+      }
+
+      .stats {
+        grid-template-columns: 1fr;
+        gap: 14px;
+      }
+
+      .legend-panel,
+      .instruction-panel {
+        padding: 16px;
+        border-radius: 18px;
+      }
+
+      .plan-card {
+        border-radius: 22px;
+      }
+
+      .plan-header {
+        padding: 18px 16px 10px;
+      }
+
+      .plan-title {
+        font-size: 18px;
+      }
+
+      .plan-wrap {
+        padding: 8px 10px 10px;
+      }
+
+      .overlay {
+        inset: 8px 10px 10px 10px;
+        width: calc(100% - 20px);
+        height: calc(100% - 18px);
+      }
+
+      .selection-bar {
+        margin: 0 10px 12px;
+        padding: 14px;
+      }
+
+      .selection-main {
+        font-size: 17px;
+      }
+
+      .selection-area {
+        font-size: 14px;
+      }
+
+      .plan-note {
+        padding: 0 16px 16px;
+      }
+
+      .tooltip {
+        display: none !important;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="grain"></div>
+
+  <div class="page">
+    <section class="hero">
+      <div class="hero-top">
+        <div class="hero-badge">Интерактивная презентация проекта</div>
+        <div class="hero-pills">
+          <span class="pill">3 этаж</span>
+          <span class="pill">4 этаж</span>
+          <span class="pill">Фитнес-зона</span>
+        </div>
+      </div>
+
+      <h1>Архитектурный проект с интерактивными зонами</h1>
+      <p>
+        Презентация проекта с интерактивными планировками жилых лотов на 3 и 4 этажах,
+        а также с инфраструктурной зоной. Наведите курсор на нужную область, чтобы увидеть площадь.
+      </p>
+
+      <div class="stats">
+        <div class="stat-card">
+          <div class="stat-label">Жилых лотов</div>
+          <div class="stat-value">28</div>
+          <div class="stat-sub">на 3 и 4 этажах</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Этажей в блоке</div>
+          <div class="stat-value">2</div>
+          <div class="stat-sub">третий и четвёртый</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Фитнес-зона</div>
+          <div class="stat-value">2000 м²</div>
+          <div class="stat-sub">инфраструктурная часть проекта</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Стиль</div>
+          <div class="stat-value">Premium</div>
+          <div class="stat-sub">золотая проектная палитра</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="legend-panel">
+      <h2 class="section-title">Легенда</h2>
+      <div class="legend-list">
+        <div class="legend-item">
+          <span class="legend-dot legend-small"></span>
+          <span>Малые площади</span>
+        </div>
+        <div class="legend-item">
+          <span class="legend-dot legend-medium"></span>
+          <span>Средние площади</span>
+        </div>
+        <div class="legend-item">
+          <span class="legend-dot legend-large"></span>
+          <span>Большие площади</span>
+        </div>
+        <div class="legend-item">
+          <span class="legend-dot legend-fitness"></span>
+          <span>Инфраструктура / фитнес-зона</span>
+        </div>
+      </div>
+    </section>
+
+    <section class="instruction-panel">
+      <h2 class="section-title">Как использовать</h2>
+      <p class="instruction-text">
+        Наведите курсор на квартиру или зону проекта. Когда курсор уходит с объекта, линия и подсказка исчезают.
+      </p>
+    </section>
+
+    <section class="plans">
+      <div class="plan-card">
+        <div class="plan-header">
+          <div class="plan-header-left">
+            <h3 class="plan-title">Проект 1 — 3 этаж</h3>
+          </div>
+          <div class="plan-tag">Жилой генплан</div>
+        </div>
+
+        <div class="plan-wrap js-plan">
+          <img src="yakkasaroy3.png" class="plan-image js-plan-image" alt="План 3 этажа">
+          <svg class="overlay js-plan-svg"></svg>
+          <div class="tooltip js-tooltip"></div>
+
+          <!-- ЗАМЕНЕНЫ ТОЛЬКО MAP ДЛЯ 3 И 4 ЭТАЖА -->
+
+<!-- ===== 3 ЭТАЖ ===== -->
+<map class="js-image-map">
+    <!-- Основной план -->
+    <area coords="633,376,631,473,625,480,557,482,556,549,559,552,661,554,665,560,666,619,696,620,699,617,699,565,695,558,699,551,699,532,705,525,735,527,744,523,745,463,741,460,708,460,701,456,699,426,695,419,699,404,699,382,696,377,684,374" shape="poly" data-room="1" data-label="Квартира 1" title="44.1 м²">
+    <area coords="796,292,777,314,772,323,771,335,761,342,743,371,735,376,717,376,707,381,707,450,710,453,743,453,752,461,752,530,748,537,748,557,752,562,851,562,856,558,860,536,856,395,867,383,884,353,825,306" shape="poly" data-room="2" data-label="Квартира 2" title="58.3 м²">
+    <area coords="887,364,871,390,871,414,867,429,870,448,867,457,867,518,870,525,867,546,872,561,1011,564,1016,558,1014,504,1020,495,1018,445,910,368,899,363" shape="poly" data-room="3" data-label="Квартира 3" title="48.9 м²">
+    <area coords="1029,510,1025,515,1025,551,1029,559,1024,569,1026,689,1032,694,1052,698,1067,693,1181,692,1184,683,1183,638,1191,628,1190,560,1178,557,1108,556,1104,550,1104,511,1101,508,1045,507" shape="poly" data-room="4" data-label="Квартира 4" title="49.7 м²">
+    <area coords="699,632,697,629,663,628,659,625,658,562,655,559,591,559,578,564,560,560,557,563,557,576,566,586,560,593,549,588,495,587,484,590,488,625,485,688,490,694,529,694,540,690,546,694,575,693,591,698,607,698,613,694,691,693,698,686,695,667,698,661,696,651" shape="poly" data-room="5" data-label="Квартира 5" title="46.6 м²">
+    <area coords="1199,650,1193,658,1194,696,1187,700,1164,700,1157,710,1157,729,1161,736,1161,823,1325,823,1328,702,1324,691,1328,682,1327,651,1318,648" shape="poly" data-room="6" data-label="Квартира 6" title="52.3 м²">
+    <area coords="1111,749,1106,833,1108,871,1111,874,1131,874,1141,881,1171,880,1178,885,1181,897,1191,906,1191,981,1212,984,1326,982,1327,974,1322,958,1325,949,1322,933,1327,908,1326,840,1315,833,1215,831,1187,837,1179,831,1158,831,1151,821,1150,750,1138,746" shape="poly" data-room="7" data-label="Квартира 7" title="58.4 м²">
+    <area coords="1027,747,1025,822,1028,834,1025,840,1024,943,1028,953,1026,980,1045,984,1177,983,1181,974,1177,954,1179,884,1106,881,1100,874,1101,834,1096,824,1101,807,1098,755,1084,749,1068,752,1047,746" shape="poly" data-room="8" data-label="Квартира 8" title="57.6 м²">
+    <area coords="1013,746,996,746,974,753,962,750,945,753,944,874,938,881,873,881,868,884,866,909,871,926,867,982,995,984,1015,980,1016,839,1013,828,1016,822,1016,749" shape="poly" data-room="9" data-label="Квартира 9" title="58.2 м²">
+    <area coords="933,749,807,747,784,750,783,982,856,982,857,964,854,953,857,947,859,878,868,873,935,872,936,752" shape="poly" data-room="10" data-label="Квартира 10" title="57.5 м²">
+    <area coords="627,749,625,823,628,839,624,846,625,871,686,873,700,877,705,885,704,932,708,953,706,981,725,984,774,983,774,754,749,746,686,751" shape="poly" data-room="11" data-label="Квартира 11" title="57.5 м²">
+    <area coords="544,746,541,749,541,909,546,946,543,981,646,984,695,981,694,884,653,880,622,881,616,874,616,833,611,823,617,806,614,780,617,768,613,753,600,749,585,752,562,746" shape="poly" data-room="12" data-label="Квартира 12" title="58.2 м²">
+    <area coords="529,746,510,745,491,752,475,749,462,753,463,827,455,840,455,871,452,878,445,882,388,884,385,890,384,909,389,925,385,980,388,983,509,984,530,980,532,839,528,828,532,821,532,750" shape="poly" data-room="13" data-label="Квартира 13" title="54.7 м²">
+    <area coords="451,746,430,745,412,752,413,789,409,795,400,798,399,813,395,819,329,821,300,858,275,897,265,921,267,949,287,973,309,983,374,982,371,953,375,939,377,879,384,875,406,872,442,874,445,871,445,838,456,825,456,752" shape="poly" data-room="14" data-label="Квартира 14" title="54.4 м²">
+
+    <!-- Левая экспликация -->
+    <area coords="76,229,351,229,351,265,76,265" shape="poly" data-room="1" data-label="Квартира 1" title="44.1 м²">
+    <area coords="76,269,351,269,351,305,76,305" shape="poly" data-room="2" data-label="Квартира 2" title="58.3 м²">
+    <area coords="76,309,351,309,351,344,76,344" shape="poly" data-room="3" data-label="Квартира 3" title="48.9 м²">
+    <area coords="76,348,351,348,351,384,76,384" shape="poly" data-room="4" data-label="Квартира 4" title="49.7 м²">
+    <area coords="76,388,351,388,351,423,76,423" shape="poly" data-room="5" data-label="Квартира 5" title="46.6 м²">
+    <area coords="76,427,351,427,351,463,76,463" shape="poly" data-room="6" data-label="Квартира 6" title="52.3 м²">
+    <area coords="76,467,351,467,351,503,76,503" shape="poly" data-room="7" data-label="Квартира 7" title="58.4 м²">
+    <area coords="76,507,351,507,351,543,76,543" shape="poly" data-room="8" data-label="Квартира 8" title="57.6 м²">
+    <area coords="76,547,351,547,351,582,76,582" shape="poly" data-room="9" data-label="Квартира 9" title="58.2 м²">
+    <area coords="76,586,351,586,351,622,76,622" shape="poly" data-room="10" data-label="Квартира 10" title="57.5 м²">
+    <area coords="76,626,351,626,351,662,76,662" shape="poly" data-room="11" data-label="Квартира 11" title="57.5 м²">
+    <area coords="76,666,351,666,351,702,76,702" shape="poly" data-room="12" data-label="Квартира 12" title="58.2 м²">
+    <area coords="76,706,351,706,351,742,76,742" shape="poly" data-room="13" data-label="Квартира 13" title="54.7 м²">
+    <area coords="76,746,351,746,351,783,76,783" shape="poly" data-room="14" data-label="Квартира 14" title="54.4 м²">
+</map>
+        </div>
+
+        <div class="selection-bar js-selection-bar">
+          <div class="selection-meta">
+            <div>
+              <div class="selection-kicker">Выбрано</div>
+              <div class="selection-main js-selection-label">Квартира 1</div>
+            </div>
+            <div class="selection-area js-selection-area">Площадь: 44.1 м²</div>
+          </div>
+          <div class="selection-status">3 этаж</div>
+        </div>
+
+        <div class="plan-note">
+          Жилой блок третьего этажа с интерактивными зонами на основном плане и в боковой экспликации.
+        </div>
+      </div>
+
+      <div class="plan-card">
+        <div class="plan-header">
+          <div class="plan-header-left">
+            <h3 class="plan-title">Проект 2 — 4 этаж</h3>
+          </div>
+          <div class="plan-tag">Продолжение жилого генплана</div>
+        </div>
+
+        <div class="plan-wrap js-plan">
+          <img src="yakkasaroy4.png" class="plan-image js-plan-image" alt="План 4 этажа">
+          <svg class="overlay js-plan-svg"></svg>
+          <div class="tooltip js-tooltip"></div>
+
+          <map class="js-image-map">
+    <!-- Основной план -->
+    <area coords="634,377,631,380,631,474,625,481,556,483,555,552,658,556,664,563,666,621,696,622,699,619,699,565,696,559,699,553,699,534,705,527,735,528,745,524,745,465,742,462,708,462,701,458,699,428,695,421,699,413,699,383,696,378" shape="poly" data-room="15" data-label="Квартира 15" title="44.1 м²">
+    <area coords="794,293,772,323,770,334,761,342,742,372,734,377,719,377,707,382,705,402,709,421,706,452,709,455,743,455,752,463,752,531,747,540,747,559,750,563,852,564,859,550,856,398,881,365,885,353,814,300,801,293" shape="poly" data-room="16" data-label="Квартира 16" title="58.3 м²">
+    <area coords="890,363,870,395,870,442,866,449,866,543,871,562,1013,565,1018,559,1018,513,1015,507,1020,499,1019,446,904,365" shape="poly" data-room="17" data-label="Квартира 17" title="48.9 м²">
+    <area coords="1027,513,1024,523,1024,551,1028,559,1024,567,1026,690,1041,699,1060,699,1067,695,1184,693,1185,636,1191,627,1191,562,1187,559,1109,558,1105,552,1105,513,1101,509,1035,509" shape="poly" data-room="18" data-label="Квартира 18" title="49.7 м²">
+    <area coords="699,633,664,629,660,626,656,605,656,562,593,561,584,566,560,563,557,566,558,582,552,589,492,589,483,593,487,623,483,687,493,695,527,695,539,691,545,695,581,695,589,699,608,699,616,695,692,694,699,688" shape="poly" data-room="19" data-label="Квартира 19" title="46.6 м²">
+    <area coords="1199,651,1193,659,1193,697,1186,701,1165,701,1158,711,1158,731,1161,737,1161,825,1326,825,1327,651" shape="poly" data-room="20" data-label="Квартира 20" title="52.3 м²">
+    <area coords="1112,750,1108,755,1108,874,1111,877,1171,877,1178,881,1180,893,1190,907,1190,949,1193,955,1190,982,1210,986,1325,984,1327,975,1322,953,1327,945,1327,842,1315,835,1210,833,1188,838,1180,833,1158,832,1152,825,1151,751,1139,748" shape="poly" data-room="21" data-label="Квартира 21" title="58.4 м²">
+    <area coords="1027,749,1024,754,1025,823,1028,829,1024,855,1025,948,1028,955,1024,967,1025,982,1031,985,1179,984,1181,964,1177,956,1182,939,1179,887,1107,882,1101,875,1099,821,1102,813,1102,768,1099,756,1085,750,1069,753,1049,748" shape="poly" data-room="22" data-label="Квартира 22" title="57.6 м²">
+    <area coords="1015,749,995,747,989,751,959,751,945,757,943,874,934,882,871,882,867,885,867,984,1009,985,1014,981" shape="poly" data-room="23" data-label="Квартира 23" title="58.2 м²">
+    <area coords="934,750,783,751,783,985,855,984,859,879,866,875,935,874,937,753" shape="poly" data-room="24" data-label="Квартира 24" title="57.5 м²">
+    <area coords="625,751,625,874,655,875,666,883,672,883,683,875,700,877,704,883,704,947,708,958,706,983,774,985,775,755,748,747,687,753" shape="poly" data-room="25" data-label="Квартира 25" title="57.5 м²">
+    <area coords="542,749,540,942,545,961,541,982,545,985,695,983,697,970,693,955,697,942,696,887,683,883,622,882,616,875,614,820,617,791,614,782,617,769,614,756,601,750,585,752,562,748" shape="poly" data-room="26" data-label="Квартира 26" title="58.2 м²">
+    <area coords="529,748,474,751,463,756,463,820,461,832,454,841,454,876,450,882,384,885,384,911,388,928,388,961,384,975,386,984,525,985,531,981,532,840,529,829,532,823,532,752" shape="poly" data-room="27" data-label="Квартира 27" title="54.7 м²">
+    <area coords="452,749,430,747,413,751,412,790,408,796,400,799,399,814,395,820,333,822,327,824,274,900,264,923,266,951,284,974,308,985,373,984,375,964,371,955,375,947,377,881,384,877,406,875,441,877,446,873,446,839,456,828,456,753" shape="poly" data-room="28" data-label="Квартира 28" title="54.4 м²">
+
+    <!-- Левая экспликация -->
+    <area coords="76,230,351,230,351,266,76,266" shape="poly" data-room="15" data-label="Квартира 15" title="44.1 м²">
+    <area coords="76,270,351,270,351,306,76,306" shape="poly" data-room="16" data-label="Квартира 16" title="58.3 м²">
+    <area coords="76,310,351,310,351,345,76,345" shape="poly" data-room="17" data-label="Квартира 17" title="48.9 м²">
+    <area coords="76,349,351,349,351,385,76,385" shape="poly" data-room="18" data-label="Квартира 18" title="49.7 м²">
+    <area coords="76,389,351,389,351,425,76,425" shape="poly" data-room="19" data-label="Квартира 19" title="46.6 м²">
+    <area coords="76,429,351,429,351,465,76,465" shape="poly" data-room="20" data-label="Квартира 20" title="52.3 м²">
+    <area coords="76,469,351,469,351,505,76,505" shape="poly" data-room="21" data-label="Квартира 21" title="58.4 м²">
+    <area coords="76,509,351,509,351,545,76,545" shape="poly" data-room="22" data-label="Квартира 22" title="57.6 м²">
+    <area coords="76,549,351,549,351,585,76,585" shape="poly" data-room="23" data-label="Квартира 23" title="58.2 м²">
+    <area coords="76,589,351,589,351,624,76,624" shape="poly" data-room="24" data-label="Квартира 24" title="57.5 м²">
+    <area coords="76,628,351,628,351,664,76,664" shape="poly" data-room="25" data-label="Квартира 25" title="57.5 м²">
+    <area coords="76,668,351,668,351,704,76,704" shape="poly" data-room="26" data-label="Квартира 26" title="58.2 м²">
+    <area coords="76,708,351,708,351,744,76,744" shape="poly" data-room="27" data-label="Квартира 27" title="54.7 м²">
+    <area coords="76,748,351,748,351,785,76,785" shape="poly" data-room="28" data-label="Квартира 28" title="54.4 м²">
+</map>
+        </div>
+
+        <div class="selection-bar js-selection-bar">
+          <div class="selection-meta">
+            <div>
+              <div class="selection-kicker">Выбрано</div>
+              <div class="selection-main js-selection-label">Квартира 15</div>
+            </div>
+            <div class="selection-area js-selection-area">Площадь: 44.1 м²</div>
+          </div>
+          <div class="selection-status">4 этаж</div>
+        </div>
+
+        <div class="plan-note">
+          Продолжение жилого блока на четвёртом этаже. Структура и интерактивная логика сохранены.
+        </div>
+      </div>
+
+      <div class="plan-card">
+        <div class="plan-header">
+          <div class="plan-header-left">
+            <h3 class="plan-title">Проект 3 — фитнес-зона</h3>
+          </div>
+          <div class="plan-tag">Инфраструктура проекта</div>
+        </div>
+
+        <div class="plan-wrap js-plan">
+          <img src="fitness-area.png" class="plan-image js-plan-image" alt="Фитнес-зона">
+          <svg class="overlay js-plan-svg"></svg>
+          <div class="tooltip js-tooltip"></div>
+
+          <map class="js-image-map">
+            <area
+              alt="2000 м²"
+              title="2000 м²"
+              coords="1056,708,1047,700,981,700,977,713,973,715,968,712,970,699,966,624,915,621,914,589,911,585,862,585,857,582,855,541,791,491,818,442,753,389,745,386,677,485,640,488,631,482,594,483,580,495,382,794,378,808,366,818,333,868,326,885,328,911,342,932,367,944,518,944,525,941,544,944,627,944,634,941,1050,943,1056,938,1053,914,1057,908,1058,828,1053,819,1057,806,1058,737,1053,726"
+              data-holes="662,615,667,612,818,614,818,709,793,713,666,712,661,707"
+              shape="poly"
+              data-room="fitness-1"
+              data-label="Фитнес-центр"
+              data-type="fitness"
+            >
+            <area
+              alt="2000 м²"
+              title="2000 м²"
+              coords="1043,119,1029,118,1021,123,1015,117,995,117,980,121,973,116,911,116,904,121,895,115,889,115,872,123,854,146,837,134,831,135,719,306,719,320,740,334,726,352,725,360,799,423,843,455,966,413,1045,382,1048,377,1048,359,1043,337,1048,331,1048,304,1045,298,1048,286,1048,244,1041,225,1048,215,1048,126"
+              data-holes="986,181,1011,193,1029,213,990,270,950,240,952,232"
+              shape="poly"
+              data-room="fitness-1"
+              data-label="Фитнес-центр"
+              data-type="fitness"
+            >
+          </map>
+        </div>
+
+        <div class="selection-bar js-selection-bar">
+          <div class="selection-meta">
+            <div>
+              <div class="selection-kicker">Выбрано</div>
+              <div class="selection-main js-selection-label">Фитнес-центр</div>
+            </div>
+            <div class="selection-area js-selection-area">Площадь: 2000 м²</div>
+          </div>
+          <div class="selection-status">Инфраструктурная зона</div>
+        </div>
+
+        <div class="plan-note">
+          Инфраструктурная зона проекта. При уходе курсора с зоны подсветка и линия полностью исчезают.
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <script>
+    function coordsToPoints(coords) {
+      const nums = coords.split(",").map(n => +n);
+      const pts = [];
+      for (let i = 0; i < nums.length; i += 2) {
+        pts.push(nums[i] + "," + nums[i + 1]);
+      }
+      return pts.join(" ");
+    }
+
+    function center(coords) {
+      const nums = coords.split(",").map(n => +n);
+      let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
+
+      for (let i = 0; i < nums.length; i += 2) {
+        const x = nums[i];
+        const y = nums[i + 1];
+        if (x < minX) minX = x;
+        if (y < minY) minY = y;
+        if (x > maxX) maxX = x;
+        if (y > maxY) maxY = y;
+      }
+
+      return {
+        x: (minX + maxX) / 2,
+        y: (minY + maxY) / 2
+      };
+    }
+
+    function getTypeClass(areaValue, customType) {
+      if (customType === "fitness") return "type-fitness";
+      if (areaValue < 50) return "type-s";
+      if (areaValue < 58) return "type-m";
+      return "type-l";
+    }
+
+    function initPlan(planWrap) {
+      const planImage = planWrap.querySelector(".js-plan-image");
+      const planSvg = planWrap.querySelector(".js-plan-svg");
+      const tooltip = planWrap.querySelector(".js-tooltip");
+      const areas = planWrap.querySelectorAll(".js-image-map area");
+
+      const selectionBar = planWrap.parentElement.querySelector(".js-selection-bar");
+      const selectionLabel = selectionBar.querySelector(".js-selection-label");
+      const selectionArea = selectionBar.querySelector(".js-selection-area");
+
+      let currentActive = null;
+      const roomGroups = new Map();
+
+      function buildPlan() {
+        const w = planImage.naturalWidth;
+        const h = planImage.naturalHeight;
+
+        if (!w || !h) return;
+
+        planSvg.innerHTML = "";
+        planSvg.setAttribute("viewBox", `0 0 ${w} ${h}`);
+        roomGroups.clear();
+
+        areas.forEach((a, i) => {
+          const holes = a.dataset.holes;
+          const poly = document.createElementNS("http://www.w3.org/2000/svg", holes ? "path" : "polygon");
+          const areaText = String(a.title || "").replace(",", ".");
+          const areaValue = parseFloat(areaText) || 0;
+          const roomId = a.dataset.room || String(i + 1);
+          const c = center(a.coords);
+          const typeClass = getTypeClass(areaValue, a.dataset.type || "");
+
+          if (holes) {
+            // зона с вырезами (например, лифтовой узел): контур + отверстия, fill-rule evenodd
+            let d = "M" + coordsToPoints(a.coords) + "Z";
+            holes.split(";").forEach(h => { d += "M" + coordsToPoints(h) + "Z"; });
+            poly.setAttribute("d", d);
+            poly.setAttribute("fill-rule", "evenodd");
+          } else {
+            poly.setAttribute("points", coordsToPoints(a.coords));
+          }
+          poly.classList.add("room", typeClass);
+
+          poly._meta = {
+            roomId,
+            cx: c.x,
+            cy: c.y,
+            area: a.title || "",
+            label: a.dataset.label || `Квартира ${roomId}`
+          };
+
+          if (!roomGroups.has(roomId)) {
+            roomGroups.set(roomId, []);
+          }
+          roomGroups.get(roomId).push(poly);
+
+          poly.addEventListener("mouseenter", () => {
+            activateByRoom(roomId, true);
+          });
+
+          poly.addEventListener("mousemove", () => {
+            if (currentActive && currentActive._meta.roomId === roomId) {
+              showTooltip(currentActive);
+            }
+          });
+
+          poly.addEventListener("mouseleave", () => {
+            deactivateAll();
+          });
+
+          poly.addEventListener("click", () => {
+            activateByRoom(roomId, true);
+          });
+
+          poly.addEventListener("touchstart", (e) => {
+            e.preventDefault();
+            activateByRoom(roomId, false);
+          }, { passive: false });
+
+          planSvg.appendChild(poly);
+        });
+
+        const firstPoly = planSvg.querySelector(".room");
+        if (firstPoly) {
+          updateSelection(firstPoly);
+        }
+      }
+
+      function clearStates() {
+        planSvg.querySelectorAll(".room").forEach(r => r.classList.remove("active"));
+      }
+
+      function deactivateAll() {
+        clearStates();
+        hideTooltip();
+        currentActive = null;
+      }
+
+      function showTooltip(roomEl) {
+        if (window.innerWidth <= 760) return;
+
+        const rect = planWrap.getBoundingClientRect();
+        const vb = planSvg.viewBox.baseVal;
+
+        const x = (roomEl._meta.cx / vb.width) * rect.width;
+        const y = (roomEl._meta.cy / vb.height) * rect.height - 18;
+
+        tooltip.innerHTML = `
+          <strong>${roomEl._meta.label}</strong>
+          Площадь: ${roomEl._meta.area}
+        `;
+        tooltip.style.left = x + "px";
+        tooltip.style.top = y + "px";
+        tooltip.classList.add("show");
+      }
+
+      function hideTooltip() {
+        tooltip.classList.remove("show");
+      }
+
+      function updateSelection(roomEl) {
+        selectionLabel.textContent = roomEl._meta.label;
+        selectionArea.textContent = `Площадь: ${roomEl._meta.area}`;
+      }
+
+      function activateByRoom(roomId, showTip = true) {
+        clearStates();
+
+        const group = roomGroups.get(roomId) || [];
+        group.forEach(el => el.classList.add("active"));
+
+        if (group.length) {
+          currentActive = group[0];
+          updateSelection(group[0]);
+          if (showTip) {
+            showTooltip(group[0]);
+          } else {
+            hideTooltip();
+          }
+        }
+      }
+
+      if (planImage.complete) {
+        buildPlan();
+      } else {
+        planImage.onload = buildPlan;
+      }
+
+      planWrap.addEventListener("mouseleave", () => {
+        deactivateAll();
+      });
+
+      window.addEventListener("resize", () => {
+        if (currentActive && tooltip.classList.contains("show") && window.innerWidth > 760) {
+          showTooltip(currentActive);
+        } else {
+          hideTooltip();
+        }
+      });
+    }
+
+    document.querySelectorAll(".js-plan").forEach(initPlan);
+  </script>
+</body>
+</html>
